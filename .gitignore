@@ -1,0 +1,10 @@
+# 기획 문서 / 메모
+*.md
+*.txt
+
+# Claude 설정
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Flame Detector</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app" aria-live="polite">
+      <section class="topbar" aria-label="게임 정보">
+        <div class="stat">
+          <span>스테이지</span>
+          <strong id="stage">1</strong>
+        </div>
+        <div class="stat stat-time">
+          <span>남은 시간</span>
+          <strong id="time">60.0</strong>
+        </div>
+        <div class="stat">
+          <span>점수</span>
+          <strong id="score">0</strong>
+        </div>
+      </section>
+
+      <section class="board-wrap">
+        <div id="board" class="board" aria-label="화재 감지 그리드"></div>
+        <div id="fireFlash" class="fire-flash hidden"></div>
+        <div id="stageBanner" class="stage-banner hidden" aria-hidden="true"></div>
+        <div id="countdown" class="overlay hidden" aria-hidden="true"></div>
+        <div id="nameInputScreen" class="overlay hidden">
+          <div class="panel">
+            <p class="game-over-title" id="rankEntryTitle">TOP 3!</p>
+            <p class="eyebrow" id="rankNotice">순위 진입!</p>
+            <input type="text" id="nameInput" class="name-input"
+                   placeholder="Your Name" maxlength="12"
+                   autocomplete="off" spellcheck="false" inputmode="latin">
+            <p class="name-hint">English / Numbers only &middot; Max 12 chars</p>
+            <button id="nameConfirmButton" class="primary-button" type="button">CONFIRM</button>
+          </div>
+        </div>
+        <div id="gameOverScreen" class="overlay hidden">
+          <div class="panel">
+            <p class="game-over-title">GAME OVER</p>
+            <p class="eyebrow" id="gameOverReason">실제 화재 발생</p>
+            <p id="newRecord" class="new-record hidden">★ NEW RECORD ★</p>
+            <dl class="results">
+              <div>
+                <dt>최종 점수</dt>
+                <dd id="finalScore">0</dd>
+              </div>
+              <div>
+                <dt>도달 스테이지</dt>
+                <dd id="finalStage">1</dd>
+              </div>
+              <div>
+                <dt>최고 점수</dt>
+                <dd id="bestScore">0</dd>
+              </div>
+            </dl>
+            <div id="gameOverRanking" class="go-ranking"></div>
+            <button id="restartButton" class="primary-button" type="button">PLAY AGAIN</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="게임 조작">
+        <button id="resetButton" class="secondary-button" type="button">재시작</button>
+        <p id="message" class="message">붉은 징후를 놓치면 즉시 게임 오버입니다.</p>
+      </section>
+    </main>
+
+    <!-- 타이틀 화면 (전체 화면 고정) -->
+    <div id="startScreen" class="title-screen">
+      <div id="titlePanel" class="title-panel">
+        <img class="title-logo" src="images/game title logo.png" alt="Flame Detector X">
+        <div class="title-menu">
+          <button id="startButton" class="menu-btn" type="button">
+            <img src="images/menu-start.png" alt="START">
+          </button>
+          <button id="howtoButton" class="menu-btn" type="button">
+            <img src="images/menu-howto.png" alt="플레이 방법">
+          </button>
+        </div>
+      </div>
+      <div id="howtoPanel" class="howto-panel hidden">
+        <div class="panel">
+          <p class="howto-title">플레이 방법</p>
+          <div class="demo">
+            <div class="demo-row">
+              <span class="demo-cell is-fire"></span>
+              <span class="demo-label"><strong>진짜 징후</strong> — 빠르게 터치하세요</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-cell is-fake"></span>
+              <span class="demo-label"><strong>가짜 징후</strong> — 터치하면 시간 −3초</span>
+            </div>
+            <div class="demo-row">
+              <span class="demo-cell"></span>
+              <span class="demo-label"><strong>빈 칸</strong> — 터치하면 시간 −3초</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <audio id="bgm" src="Steel Calm.wav" loop preload="auto"></audio>
+    <script src="main.js"></script>
+  </body>
+</html>
