@@ -62,11 +62,21 @@
             <button id="restartButton" class="primary-button" type="button">PLAY AGAIN</button>
           </div>
         </div>
+        <div id="confirmDialog" class="overlay hidden">
+          <div class="panel confirm-panel">
+            <p id="confirmMessage" class="confirm-message">재시작 하시겠습니까?</p>
+            <div class="confirm-buttons">
+              <button id="confirmYes" class="primary-button confirm-btn" type="button">예</button>
+              <button id="confirmNo" class="secondary-button confirm-btn" type="button">아니오</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="controls" aria-label="게임 조작">
         <button id="resetButton" class="secondary-button" type="button">재시작</button>
         <p id="message" class="message">붉은 징후를 놓치면 즉시 게임 오버입니다.</p>
+        <button id="homeButton" class="secondary-button" type="button">처음으로</button>
       </section>
     </main>
 

@@ -374,12 +374,14 @@ h2 {
 }
 
 .message {
+  flex: 1;
   margin: 0;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.35;
   word-break: keep-all;
   letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .results {
@@ -850,4 +852,35 @@ h2 {
 @keyframes cdPop {
   from { transform: scale(0.7); opacity: 0; }
   to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ── 확인 다이얼로그 ─────────────────────────────────────────── */
+
+#confirmDialog {
+  z-index: 10;
+}
+
+.confirm-panel {
+  width: min(100%, 300px);
+  padding: 28px 24px;
+}
+
+.confirm-message {
+  margin: 0 0 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+  word-break: keep-all;
+  text-align: center;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-btn {
+  flex: 1;
+  min-height: 48px;
 }

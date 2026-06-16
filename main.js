@@ -49,6 +49,11 @@ const bgmEl = document.querySelector("#bgm");
 const howtoButton = document.querySelector("#howtoButton");
 const howtoPanelEl = document.querySelector("#howtoPanel");
 const titlePanelEl = document.querySelector("#titlePanel");
+const homeButton = document.querySelector("#homeButton");
+const confirmDialogEl = document.querySelector("#confirmDialog");
+const confirmMessageEl = document.querySelector("#confirmMessage");
+const confirmYesEl = document.querySelector("#confirmYes");
+const confirmNoEl = document.querySelector("#confirmNo");
 
 // ── 효과음 ──────────────────────────────────────────────────────────────────
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -280,6 +285,9 @@ let stageClears = 0;
 let running = false;
 let countdownRunning = false;
 let stageBannerActive = false;
+let paused = false;
+let pauseStartTime = 0;
+let pendingAction = null;
 let lastFrame = 0;
 let lastSpawn = 0;
 let animationFrame = 0;
@@ -782,6 +790,78 @@ function animateCount(el, target) {
   requestAnimationFrame(step);
 }
 
+// ── 일시정지 / 재개 ─────────────────────────────────────────────────────────
+
+function pauseForConfirm() {
+  pauseStartTime = performance.now();
+  paused = true;
+  cancelAnimationFrame(animationFrame);
+  activeFires.forEach((fire) => {
+    clearTimeout(fire.timeoutId);
+    fire.pauseRemaining = Math.max(0, fire.burnTime - (pauseStartTime - fire.createdAt));
+  });
+  if (activeFake) {
+    clearTimeout(activeFake.timeoutId);
+    activeFake.pauseRemaining = Math.max(0, FAKE_LIFETIME - (pauseStartTime - activeFake.createdAt));
+  }
+}
+
+function resumeFromPause() {
+  const now = performance.now();
+  const elapsed = now - pauseStartTime;
+  paused = false;
+  activeFires.forEach((fire, index) => {
+    fire.createdAt += elapsed;
+    fire.timeoutId = setTimeout(() => {
+      if (running && activeFires.has(index)) endGame("실제 화재 발생", index);
+    }, fire.pauseRemaining);
+  });
+  if (activeFake) {
+    const fakeIndex = activeFake.index;
+    activeFake.createdAt += elapsed;
+    activeFake.timeoutId = setTimeout(() => {
+      if (activeFake && activeFake.index === fakeIndex) {
+        cells[fakeIndex].className = "cell";
+        activeFake = null;
+      }
+    }, activeFake.pauseRemaining);
+  }
+  lastSpawn += elapsed;
+  lastFrame = now;
+  animationFrame = requestAnimationFrame(tick);
+}
+
+function showConfirm(message, onYes) {
+  confirmMessageEl.textContent = message;
+  confirmDialogEl.classList.remove("hidden");
+  pendingAction = onYes;
+  if (running && !paused && !countdownRunning && !stageBannerActive) {
+    pauseForConfirm();
+  }
+}
+
+function closeConfirm(confirmed) {
+  confirmDialogEl.classList.add("hidden");
+  if (confirmed && pendingAction) {
+    paused = false;
+    pendingAction();
+  } else if (running && paused) {
+    resumeFromPause();
+  }
+  pendingAction = null;
+}
+
+function goToTitle() {
+  resetState();
+  bgmEl.pause();
+  bgmEl.currentTime = 0;
+  startScreen.classList.remove("hidden");
+  titlePanelEl.classList.remove("hidden");
+  howtoPanelEl.classList.add("hidden");
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+
 // 한글 등 비허용 문자 실시간 차단
 nameInputEl.addEventListener("input", () => {
   const cleaned = nameInputEl.value.replace(/[^a-zA-Z0-9 ]/g, "");
@@ -813,7 +893,25 @@ howtoPanelEl.addEventListener("pointerdown", () => {
 });
 
 restartButton.addEventListener("click", startGame);
-resetButton.addEventListener("click", startGame);
+
+resetButton.addEventListener("click", () => {
+  if (running && !countdownRunning) {
+    showConfirm("재시작 하시겠습니까?", () => startGame());
+  } else {
+    startGame();
+  }
+});
+
+homeButton.addEventListener("click", () => {
+  if (running && !countdownRunning) {
+    showConfirm("처음 타이틀 화면으로\n돌아가시겠습니까?", () => goToTitle());
+  } else {
+    goToTitle();
+  }
+});
+
+confirmYesEl.addEventListener("click", () => closeConfirm(true));
+confirmNoEl.addEventListener("click", () => closeConfirm(false));
 
 createBoard();
 updateHud();
